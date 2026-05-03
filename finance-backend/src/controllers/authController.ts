@@ -4,6 +4,7 @@ import User from "../models/User.model.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import { asyncHandler, sendSuccess } from "../utils/asyncHandler.js";
 import { AuthResponse } from "../types/index.js";
+import { generateToken } from "../utils/authToken.js";
 
 export const register = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body;
@@ -61,4 +62,36 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
   };
 
   sendSuccess(res, authResponse, "Account created successfully!", 201);
+});
+
+export const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new AppError("All fields are required", 400);
+  }
+
+  const user = await User.findOne({ email: email });
+
+  if (!user) {
+    throw new AppError("User not found", 401);
+  }
+
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordCorrect) {
+    throw new AppError("Invalid password or email", 401);
+  }
+
+  const userObject = user.toObject();
+
+  const { password: _, ...userWithoutPassword } = userObject;
+
+  const token = generateToken(user._id.toString());
+
+  const authResponse: AuthResponse = {
+    user: { ...userWithoutPassword, _id: user._id.toString() },
+    token,
+  };
+  sendSuccess(res, authResponse, "Login successful");
 });
