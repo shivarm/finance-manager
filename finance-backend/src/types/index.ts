@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export enum ExpenseCategory {
   FOOD = "food",
@@ -51,4 +51,38 @@ export interface ApiResponse<T> {
 export interface AuthResponse {
   user: Omit<User, "password">;
   token?: string;
+}
+
+export interface CategoryTotal {
+  category: ExpenseCategory;
+  total: number;
+  count: number;
+  percentage: number;
+}
+
+export interface MonthlyTotals {
+  month: string;
+  total: number;
+  count: number;
+}
+
+export interface DashboardStats {
+  totalExpenses: number;
+  expenseCount: number;
+  roundedAverageExpenseAmount: number;
+  highestExpense: IExpense;
+  lowestExpense: IExpense;
+  currentMonthTotal: number;
+  lastMonthTotal: number;
+  monthlyChange: number;
+}
+
+export interface IExpense extends Document {
+  userId: mongoose.Types.ObjectId;
+  amount: number;
+  category: string;
+  description: string;
+  date: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
