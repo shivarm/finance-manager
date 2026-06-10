@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build": "npm install --prefix finance-backend && npm run build --prefix finance-backend && npm install --prefix finance-client && npm run build --prefix finance-client"
+  }
+}
