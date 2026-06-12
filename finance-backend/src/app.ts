@@ -6,6 +6,7 @@ import { connectDB } from "./lib/db.js";
 
 import authRoutes from "../src/routes/authRoutes.js";
 import financeRoutes from "../src/routes/financeRoutes.js";
+import profileRoutes from "../src/routes/profileRoutes.js";
 
 const app = express();
 const port = Number(ENV.PORT) || 3000;
@@ -22,6 +23,7 @@ app.get('/', (request, response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/finance", financeRoutes);
+app.use("/api/profile", profileRoutes);
 
 
 const startServer = async () => {
