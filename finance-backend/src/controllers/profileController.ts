@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { asyncHandler, sendSuccess } from "../utils/asyncHandler.js";
-import { AppError } from "../middlewares/errorHandler";
+import { AppError } from "../middlewares/errorHandler.js";
 import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import path from "node:path";

@@ -4,9 +4,9 @@ import dns from "node:dns";
 import { ENV } from "./config/env.js";
 import { connectDB } from "./lib/db.js";
 
-import authRoutes from "../src/routes/authRoutes.js";
-import financeRoutes from "../src/routes/financeRoutes.js";
-import profileRoutes from "../src/routes/profileRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import financeRoutes from "./routes/financeRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 const app = express();
 const port = Number(ENV.PORT) || 3000;
