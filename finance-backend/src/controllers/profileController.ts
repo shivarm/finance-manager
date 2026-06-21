@@ -179,3 +179,48 @@ export const deleteAccount = asyncHandler(
     sendSuccess(res, null, "Account deleted successfully> All data has been removed");
   },
 );
+
+export const exportData = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.userId;
+
+  const user = await User.findById({ _id: userId });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const expenses = await Finance.find({ userId });
+
+  const userObject = user.toObject();
+
+  const { password: _, ...userWithoutPassword } = userObject;
+
+  if (expenses.length === 0) {
+    return sendSuccess(
+      res,
+      {
+        user: userWithoutPassword,
+        expenses: [],
+        summary: {
+          totalExpense: 0,
+          expenseCount: 0,
+        },
+        exportedAt: new Date().toISOString(),
+      },
+      "Data exported successfully. You have no expense!",
+    );
+  }
+  // total expense
+  const totalExpense = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+  const exportDataObject = {
+    user: userWithoutPassword,
+    expenses,
+    summary: {
+      totalExpense: Math.round(totalExpense * 100) / 100,
+      expenseCount: expenses.length,
+    },
+    exportedAt: new Date().toISOString(),
+  };
+  sendSuccess(res, exportDataObject, "Data exported successfully.");
+});
