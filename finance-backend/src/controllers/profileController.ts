@@ -76,6 +76,38 @@ export const uploadAvatar = asyncHandler(
   },
 );
 
+export const deleteAvatar = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.userId;
+
+    const user = await User.findById({ _id: userId });
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (!user.avatar) {
+      throw new AppError("No avatar found for this user", 404);
+    }
+
+    try {
+      const avatarPath = path.join("upload", "avatars", user.avatar);
+      await fs.unlink(avatarPath);
+    } catch (error: any) {
+      // Ignore if the file doesn't exist
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
+
+    user.avatar = undefined;
+
+    await user.save();
+
+    sendSuccess(res, null, "Avatar deleted successfully");
+  },
+);
+
 export const updateProfile = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, email, password } = req.body;

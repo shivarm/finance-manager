@@ -6,6 +6,7 @@ import { upload } from "../middlewares/upload.js";
 import {
   getProfile,
   getAvatar,
+  deleteAvatar,
   updateProfile,
   uploadAvatar,
   exportData,
@@ -18,6 +19,7 @@ router.get("/", apiLimit, requireAuth, getProfile);
 router.put("/", apiLimit, requireAuth, updateProfile);
 router.post("/avatar", apiLimit, requireAuth, upload.single("avatar"), uploadAvatar);
 router.get("/avatar", apiLimit, requireAuth, getAvatar);
+router.delete("/delete/avatar", requireAuth, deleteAvatar);
 router.get("/export", requireAuth, exportData);
 router.delete("/account", requireAuth, deleteAccount);
 
