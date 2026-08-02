@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import { IExpense } from "../types/index.js";
 
 const financeSchema = new Schema<IExpense>(
@@ -32,5 +32,5 @@ const financeSchema = new Schema<IExpense>(
   },
 );
 
-const Finance = mongoose.models.Finance || mongoose.model("Finance", financeSchema);
+const Finance: Model<IExpense> = mongoose.models.Finance || mongoose.model<IExpense>("Finance", financeSchema);
 export default Finance;

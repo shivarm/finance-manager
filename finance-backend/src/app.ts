@@ -1,18 +1,16 @@
 import express from 'express';
 import cors from "cors";
-import dns from "node:dns";
 import { ENV } from "./config/env.js";
 import { connectDB } from "./lib/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import financeRoutes from "./routes/financeRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 const app = express();
 const port = Number(ENV.PORT) || 3000;
 
-// remove once it fix- https://github.com/nodejs/node/issues/62326
-dns.setServers(['8.8.8.8', '1.1.1.1']); 
 
 app.use(express.json());
 app.use(cors());
@@ -24,6 +22,7 @@ app.get('/', (request, response) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/finance", financeRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 
 const startServer = async () => {
