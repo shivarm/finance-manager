@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
+import { registerSchema } from "../validation/user.schema.js";
 import { asyncHandler, sendSuccess } from "../utils/asyncHandler.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import User from "../models/User.model.js";
@@ -110,7 +112,16 @@ export const deleteAvatar = asyncHandler(
 
 export const updateProfile = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, email, password } = req.body;
+    
+     const validation = registerSchema.safeParse(req.body);
+
+     if (!validation.success) {
+       return res.status(400).json({
+         message: "Validation failed",
+         errors: z.flattenError(validation.error).fieldErrors,
+       });
+     }
+    const { name, email, password } = validation.data;
     const userId = req.userId;
 
     const user = await User.findOne({ _id: userId });

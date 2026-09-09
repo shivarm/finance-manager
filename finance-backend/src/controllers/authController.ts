@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
+import { registerSchema, loginSchema } from "../validation/user.schema.js";
 import bcrypt from "bcryptjs";
 import User from "../models/User.model.js";
 import { AppError } from "../middlewares/errorHandler.js";
@@ -7,8 +9,17 @@ import { AuthResponse } from "../types/index.js";
 import { generateToken } from "../utils/authToken.js";
 
 export const register = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { name, email, password } = req.body;
+  const validation = registerSchema.safeParse(req.body);
 
+  if (!validation.success) {
+    return res.status(400).json({
+      message: "Validation failed",
+      errors: z.flattenError(validation.error).fieldErrors
+    });
+  }
+
+  const { name, email, password } = validation.data;
+  
   if (!name || !email || !password) {
     throw new AppError("All fields are required", 400);
   }
@@ -65,7 +76,16 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
 });
 
 export const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body;
+  const validation = loginSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    return res.status(400).json({
+      message: "Validation failed",
+      errors: z.flattenError(validation.error).fieldErrors
+    });
+  }
+  
+  const { email, password } = validation.data;
 
   if (!email || !password) {
     throw new AppError("All fields are required", 400);

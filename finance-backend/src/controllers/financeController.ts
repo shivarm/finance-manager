@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
+import { financeSchema } from "../validation/finance.schema.js";
 import { asyncHandler, sendSuccess } from "../utils/asyncHandler.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import User from "../models/User.model.js";
@@ -81,8 +83,15 @@ export const createExpense = asyncHandler(
     if (!user) {
       throw new AppError("User not found", 404);
     }
+      const validation = financeSchema.safeParse(req.body);
 
-    const { amount, category, description, date } = req.body;
+      if (!validation.success) {
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: z.flattenError(validation.error).fieldErrors,
+        });
+      }
+    const { amount, category, description, date } = validation.data;
 
     if (!amount || !category || !description) {
       throw new AppError("amount, category, description required", 400);
