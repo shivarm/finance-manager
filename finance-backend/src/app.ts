@@ -13,7 +13,10 @@ const port = Number(ENV.PORT) || 3000;
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+ origin: ENV.CLIENT_ORIGIN,
+ credentials: true
+}));
 
 app.get('/', (request, response) => {
   response.send('Express + TypeScript Server');
